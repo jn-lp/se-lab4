@@ -9,8 +9,8 @@ type EventLoop struct {
 	receive      chan struct{}
 	ready        bool
 
-	pause  bool
-	finish chan struct{}
+	canFinish	 bool
+	finish		 chan struct{}
 }
 
 func (loop *EventLoop) popCommand() Command {
@@ -32,8 +32,9 @@ func (loop *EventLoop) popCommand() Command {
 }
 
 func (loop *EventLoop) run() {
-	for !loop.pause || len(loop.messageQueue) != 0 {
+	for {
 		loop.popCommand().Execute(loop)
+		if len(loop.messageQueue) == 0 && loop.canFinish { break }
 	}
 	loop.finish <- struct{}{}
 }
@@ -57,6 +58,6 @@ func (loop *EventLoop) Post(command Command) {
 }
 
 func (loop *EventLoop) AwaitFinish() {
-	loop.Post(pauseCommand(func(h Handler) {}))
+	loop.canFinish = true
 	<-loop.finish
 }
