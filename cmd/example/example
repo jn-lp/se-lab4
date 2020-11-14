@@ -1,0 +1,10 @@
+print hello
+mul 5 4
+printc 5 m
+add 4 2
+reverse hello
+palindrome hello
+sha1 hello
+split a:bc:d:ef :
+delete hello l
+cat 4 2
