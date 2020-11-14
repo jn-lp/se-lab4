@@ -8,16 +8,16 @@ import (
 )
 
 var commandsList = map[string]engine.Command{
-	"print": &printCommand{},
-	"mul": &mulCommand{},
-	"printc": &printcCommand{},
-	"add": &addCommand{},
-	"reverse": &reverseCommand{},
+	"print":      &printCommand{},
+	"mul":        &mulCommand{},
+	"printc":     &printcCommand{},
+	"add":        &addCommand{},
+	"reverse":    &reverseCommand{},
 	"palindrome": &palindromeCommand{},
-	"sha1": &sha1Command{},
-	"split": &splitCommand{},
-	"delete": &deleteCommand{},
-	"cat": &catCommand{},
+	"sha1":       &sha1Command{},
+	"split":      &splitCommand{},
+	"delete":     &deleteCommand{},
+	"cat":        &catCommand{},
 }
 
 func Construct(commandName string, args []string) (command engine.Command) {
