@@ -13,33 +13,36 @@ type EventLoop struct {
 	finish chan struct{}
 }
 
+func (loop *EventLoop) popCommand() Command {
+	loop.Lock()
+	defer loop.Unlock()
+
+	if len(loop.messageQueue) == 0 {
+		loop.ready = true
+		loop.Unlock()
+		<-loop.receive
+		loop.Lock()
+	}
+
+	cmd := loop.messageQueue[0]
+	loop.messageQueue[0] = nil
+	loop.messageQueue = loop.messageQueue[1:]
+
+	return cmd
+}
+
+func (loop *EventLoop) run() {
+	for !loop.pause || len(loop.messageQueue) != 0 {
+		loop.popCommand().Execute(loop)
+	}
+	loop.finish <- struct{}{}
+}
+
 func (loop *EventLoop) Start() {
 	loop.receive = make(chan struct{})
 	loop.finish = make(chan struct{}, 1)
 
-	go func() {
-		for !loop.pause || len(loop.messageQueue) != 0 {
-			command := func() Command {
-				loop.Lock()
-				defer loop.Unlock()
-
-				if len(loop.messageQueue) == 0 {
-					loop.ready = true
-					loop.Unlock()
-					<-loop.receive
-					loop.Lock()
-				}
-
-				cmd := loop.messageQueue[0]
-				loop.messageQueue[0] = nil
-				loop.messageQueue = loop.messageQueue[1:]
-
-				return cmd
-			}()
-			command.Execute(loop)
-		}
-		loop.finish <- struct{}{}
-	}()
+	go loop.run()
 }
 
 func (loop *EventLoop) Post(command Command) {
