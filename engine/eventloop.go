@@ -54,6 +54,6 @@ func (loop *EventLoop) Post(command Command) {
 }
 
 func (loop *EventLoop) AwaitFinish() {
-	loop.Post(pauseCommand(func(h Handler) { h.(*EventLoop).pause = true }))
+	loop.Post(pauseCommand(func(h Handler) {}))
 	<-loop.finish
 }

@@ -13,5 +13,5 @@ type Handler interface {
 type pauseCommand func(handler Handler)
 
 func (pause pauseCommand) Execute(handler Handler) {
-	pause(handler)
+	handler.(*EventLoop).pause = true
 }
