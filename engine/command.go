@@ -9,9 +9,3 @@ type Command interface {
 type Handler interface {
 	Post(cmd Command)
 }
-
-type pauseCommand func(handler Handler)
-
-func (pause pauseCommand) Execute(handler Handler) {
-	handler.(*EventLoop).pause = true
-}
