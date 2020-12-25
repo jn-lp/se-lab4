@@ -31,10 +31,17 @@ func (loop *EventLoop) popCommand() Command {
 	return cmd
 }
 
+func (loop *EventLoop) finished() bool {
+	loop.Lock()
+	defer loop.Unlock()
+
+	return len(loop.messageQueue) == 0 && loop.canFinish
+}
+
 func (loop *EventLoop) run() {
 	for {
 		loop.popCommand().Execute(loop)
-		if len(loop.messageQueue) == 0 && loop.canFinish { break }
+		if loop.finished() { break }
 	}
 	loop.finish <- struct{}{}
 }
